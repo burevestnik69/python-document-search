@@ -1,0 +1,92 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Document Search Service",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {"url": "http://localhost:8000"}
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {"status": {"type": "string"}}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Search documents",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "minLength": 1}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Up to 20 documents ordered by creation date descending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/Document"}
+                }
+              }
+            }
+          },
+          "422": {"description": "Validation error"}
+        }
+      }
+    },
+    "/documents/{id}": {
+      "delete": {
+        "summary": "Delete document",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "integer"}
+          }
+        ],
+        "responses": {
+          "204": {"description": "Deleted"},
+          "404": {"description": "Document not found"}
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Document": {
+        "type": "object",
+        "required": ["id", "text", "created_date"],
+        "properties": {
+          "id": {"type": "integer"},
+          "rubrics": {
+            "type": "array",
+            "items": {"type": "string"},
+            "nullable": true
+          },
+          "text": {"type": "string"},
+          "created_date": {"type": "string", "format": "date-time"}
+        }
+      }
+    }
+  }
+}
